@@ -9,6 +9,8 @@ deploy_lambdas() {
     zip code.zip "lambda_function.py"
     aws lambda update-function-code --function-name $lambda --zip-file fileb://code.zip --profile $AWS_DEPLOYMENT_PROFILE
   done
+  rm -f code.zip
+  rm -f lambda_function.py
 }
 
 deploy_lambdas
