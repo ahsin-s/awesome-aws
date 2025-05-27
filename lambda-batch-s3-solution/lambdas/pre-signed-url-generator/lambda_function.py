@@ -3,6 +3,7 @@ import json
 import logging
 
 import boto3 
+from botocore.exceptions import ClientError
 
 
 def create_presigned_post(
