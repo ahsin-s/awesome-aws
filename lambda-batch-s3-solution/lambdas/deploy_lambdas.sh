@@ -4,6 +4,7 @@ deploy_lambdas() {
   lambdas=(
     "pre-signed-url-generator"
     "trigger-step-function-workflow"
+    "inference-preprocessor"
   )
   for lambda in "${lambdas[@]}"; do
     rm -f code.zip
