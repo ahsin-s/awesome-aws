@@ -15,6 +15,7 @@ RUN apk add --no-cache \
     gcc \
     python3-dev \
     libpq-dev \
+    ffmpeg \
     && python3 -m venv $VENV_PATH
 
 # Set workdir and install dependencies
@@ -40,11 +41,11 @@ COPY --from=builder $VENV_PATH $VENV_PATH
 
 # Create non-root user (security step)
 RUN adduser -D appuser
+RUN apk add ffmpeg
 USER appuser
 
 # Set working directory and copy code
 WORKDIR /app
 COPY --chown=appuser:appuser . .
 
-# Default command
-CMD ["python", "main.py"]
+ENTRYPOINT ["python", "main.py"]
