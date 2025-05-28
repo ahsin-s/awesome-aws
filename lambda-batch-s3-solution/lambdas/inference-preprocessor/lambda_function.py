@@ -9,9 +9,7 @@ VALID_EXTENSIONS = [
     'mp3',
     'mp4',
     'wav',
-    'jpg',
-    'png',
-    'jpeg',
+    'm4a',
 ]
 
 def check_object_exists(bucket: str, key: str):
