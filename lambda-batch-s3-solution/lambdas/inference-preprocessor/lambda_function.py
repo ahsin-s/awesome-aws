@@ -28,29 +28,25 @@ def check_object_extension_is_valid(object_name: str):
     return False
 
 def lambda_handler(event, context):
+    user_id = event.get('user_id')
+    job_name = event.get('job_name')
     bucket = event.get('bucket')
     key = event.get('key')
 
     if not bucket or not key:
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'error': 'bucket and key are required inputs to trigger this lambda'})
-        }
+        raise ValueError("bucket and key are required inputs to trigger this lambda")
 
     if not check_object_exists(bucket, key):
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'error': f'object {key} not found'})
-        }
+        raise FileNotFoundError(f"object {key} not found")
+
 
     if not check_object_extension_is_valid(key):
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'error': f'the specified object {key} is not valid. Valid object extensions: {VALID_EXTENSIONS}'})
-        }
+        raise ValueError(f"the specified object {key} is not valid. Valid object extensions: {VALID_EXTENSIONS}")
 
 
     return {
-        'statusCode': 200,
-        'body': json.dumps({'message': 'success', 'bucket': bucket, 'key': key, 'is_valid': True})
+        'user_id': user_id,
+        'bucket': bucket,
+        'key': key,
+        'job_name': job_name
     }
