@@ -43,4 +43,4 @@ def lambda_handler(event, context):
     if not check_object_extension_is_valid(key):
         raise ValueError(f"the specified object {key} is not valid. Valid object extensions: {VALID_EXTENSIONS}")
 
-    return {"args": [bucket, key, job_name, user_id]}
+    return {"args": f"{bucket} {key} {job_name} {user_id}"}
