@@ -32,7 +32,7 @@ def check_object_extension_is_valid(object_name: str):
 
 def lambda_handler(event, context):
     user_id = event.get('user_id')
-    job_name = event.get('job_name')
+    job_id = event.get('job_id')
     bucket = event.get('bucket')
     key = event.get('key')
 
@@ -48,6 +48,6 @@ def lambda_handler(event, context):
     return {
         "bucket": bucket,
         "key": key,
-        "job_id": job_name,
+        "job_id": job_id,
         "user_id": user_id
     }
