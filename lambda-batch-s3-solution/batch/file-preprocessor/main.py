@@ -11,8 +11,10 @@ s3_client = boto3.client("s3")
 
 
 def download_s3(bucket: str, key: str) -> str:
+    logging.info(f"Downloading from {bucket} {key}")
     temp_file_path = os.path.basename(key)
     s3_client.download_file(bucket, key, temp_file_path)
+    logging.info(f"Successfully downloaded the object to {temp_file_path}")
     return temp_file_path
 
 
@@ -35,12 +37,15 @@ def upload_s3(file_name, bucket, object_name=None):
     except ClientError as e:
         logging.error(e)
         return False
+    logging.info("Object successfully uploaded")
     return True
 
 
 def determine_if_conversion_needed(filename):
     if filename.split(".")[-1] in ["mp3", "wav", "m4a", "mpeg", "mov"]:
+        logging.info("No conversion needed")
         return False
+    logging.info("File will be converted")
     return True
 
 
