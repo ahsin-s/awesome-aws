@@ -12,7 +12,7 @@ deploy_lambdas() {
     rm -f lambda_function.py
     cp $lambda/lambda_function.py .
     zip code.zip "lambda_function.py"
-    aws lambda update-function-code --function-name $lambda --zip-file fileb://code.zip >> log.txt
+    aws lambda update-function-code --function-name $lambda --zip-file fileb://code.zip >> .lambda_deployment_log.txt
   done
   rm -f code.zip
   rm -f lambda_function.py
@@ -40,7 +40,7 @@ update_lambda_layer_attachment() {
       aws lambda update-function-configuration \
         --function-name $lambda \
         --layers "$DESIRED_LAYER_ARN" \
-        >> .update_function_log.txt
+        >> .update_function_layer_log.txt
     fi
   done
 }
