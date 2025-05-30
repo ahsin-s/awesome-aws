@@ -1,0 +1,3 @@
+# Notes 
+1. When packaging common code it must be put into a zip file and inside the zip file it needs to go into a folder named "python" otherwise the common code won't be imported. This is very specific for lambda layers. 
+2. 
