@@ -1,22 +1,14 @@
 import datetime
 import os
 import json
+import traceback
 import uuid
 
 import boto3
 
-def check_object_exists(bucket: str, key: str):
-    s3_client = boto3.client("s3")
-    resp = s3_client.list_objects_v2(
-        Bucket=bucket,
-        Prefix=key,
-    )
-    if not resp.get('Contents'):
-        return False
-    return True
+from shared_constructs.aws.s3 import check_object_exists
 
-def put_job_metadata(execution_arn, user_id, object_key, bucket):
-    job_id = str(uuid.uuid4())
+def put_job_metadata(execution_arn, user_id, object_key, bucket, job_id):
     dynamodb_client = boto3.resource("dynamodb")
     table = dynamodb_client.Table('batch-jobs-metadata')
     resp = table.put_item(
@@ -31,9 +23,8 @@ def put_job_metadata(execution_arn, user_id, object_key, bucket):
     )
     if resp['ResponseMetadata']['HTTPStatusCode'] == 200:
         print("Job metadata succesfully added")
-        return job_id
-    else:
-        print("Job metadata not updated")
+        return True
+    print("Job metadata not updated")
     return False
 
 def lambda_handler(event, context):
@@ -56,21 +47,29 @@ def lambda_handler(event, context):
     # setup the step function with environment variables
     # pointing to the object to run inference on
     step_function_arn = os.environ.get("STEP_FUNCTION_ARN")
+    job_id = str(uuid.uuid4())
     step_function_input = json.dumps({
         "bucket": bucket,
-        "object_key": object_key
+        "object_key": object_key,
+        "user_id": user_id,
+        "job_id": job_id
     })
-
+    print(f"Running step function with input {step_function_input}")
     stepfunction_client = boto3.client("stepfunctions")
-    resp = stepfunction_client.start_execution(
-        stateMachineArn = step_function_arn,
-        input = step_function_input,
-    )
-    execution_arn = resp['executionArn']
+    try:
+        resp = stepfunction_client.start_execution(
+            stateMachineArn = step_function_arn,
+            input = step_function_input,
+        )
+        execution_arn = resp['executionArn']
+        print("Step function triggered")
+    except Exception as e:
+        traceback.format_exc()
+        print("Failed to execute step function")
+        raise
 
     # insert the job id and execution_arn into the jobs table in dynamodb
-    job_id = put_job_metadata(execution_arn, user_id, object_key, bucket)
-    if not job_id:
+    if not put_job_metadata(execution_arn, user_id, object_key, bucket, job_id):
         return {
             'statusCode': 500,
             'body': json.dumps({'message': 'Failed to create the inference job'})
