@@ -50,7 +50,7 @@ def lambda_handler(event, context):
     job_id = str(uuid.uuid4())
     step_function_input = json.dumps({
         "bucket": bucket,
-        "object_key": object_key,
+        "key": object_key,
         "user_id": user_id,
         "job_id": job_id
     })
