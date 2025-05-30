@@ -1,16 +1,17 @@
 [project]
 name = "lambda-batch-s3-solution"
 version = "0.1.0"
-description = "Add your description here"
+description = ""
+authors = [
+    {name = "ahsin-s",email = "ashabbi00@gmail.com"}
+]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "boto3>=1.38.23",
-    "requests>=2.32.3",
-    "transformers (>=4.52.3,<5.0.0)",
-    "datasets (>=3.6.0,<4.0.0)",
-    "torch (>=2.7.0,<3.0.0)",
-    "ffmpeg (>=1.4,<2.0)",
-    "openai-whisper (>=20240930,<20240931)",
-    "ffmpeg-python (>=0.2.0,<0.3.0)",
+    "shared-constructs (>=1.0.1,<2.0.0)"
 ]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
