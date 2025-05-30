@@ -5,12 +5,23 @@ import boto3
 from botocore.client import ClientError
 
 
-def get_s3_client(profile_name = None):
+def get_s3_client(profile_name=None):
     if profile_name:
         session = boto3.Session(profile_name=profile_name)
         s3_client = session.client('s3')
         return s3_client
     return boto3.client('s3')
+
+
+def check_object_exists(bucket: str, key: str):
+    s3_client = get_s3_client()
+    resp = s3_client.list_objects_v2(
+        Bucket=bucket,
+        Prefix=key,
+    )
+    if not resp.get('Contents'):
+        return False
+    return True
 
 
 def download_s3(bucket: str, key: str) -> str:
