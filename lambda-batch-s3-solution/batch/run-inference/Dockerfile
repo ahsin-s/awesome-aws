@@ -1,56 +1,32 @@
-# --------------------
-# Stage 1: Build stage
-# --------------------
-FROM python:3.12-slim AS builder
+# Start from NVIDIA CUDA base image
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 
-# Set environment
+# Set environment variables
 ENV VENV_PATH="/opt/venv"
-ENV PATH="$VENV_PATH/bin:$PATH"
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH="$VENV_PATH/bin:$PATH"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libopenblas-dev \
-    libssl-dev \
+    software-properties-common \
     curl \
     ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
-    && python3 -m venv $VENV_PATH
-
-# Set workdir and install dependencies
-WORKDIR /app
-COPY requirements.txt .
-RUN . $VENV_PATH/bin/activate && \
-    pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
-
-# ----------------------
-# Stage 2: Runtime stage
-# ----------------------
-FROM python:3.12-slim AS runtime
-
-# Set environment
-ENV VENV_PATH="/opt/venv"
-ENV PATH="$VENV_PATH/bin:$PATH"
-ENV DEBIAN_FRONTEND=noninteractive
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Install runtime dependencies only
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libopenblas0 \
+    wget \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update && apt-get install -y python3.12 python3.12-venv python3.12-dev python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy virtualenv from builder
-COPY --from=builder $VENV_PATH $VENV_PATH
 
+COPY requirements.txt .
 
-# Set working directory and copy code
+RUN python3.12 -m venv $VENV_PATH && \
+    . $VENV_PATH/bin/activate && \
+    pip install --upgrade pip &&\
+    pip install -r requirements.txt
+
 WORKDIR /app
 COPY . .
 
-# Default command
+# Test CUDA availability
 CMD ["python", "main.py"]
