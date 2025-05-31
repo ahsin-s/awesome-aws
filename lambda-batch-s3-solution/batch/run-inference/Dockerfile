@@ -47,13 +47,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy virtualenv from builder
 COPY --from=builder $VENV_PATH $VENV_PATH
 
-# Create non-root user (security step)
-RUN adduser -D appuser
-USER appuser
 
 # Set working directory and copy code
 WORKDIR /app
-COPY --chown=appuser:appuser . .
+COPY . .
 
 # Default command
 CMD ["python", "main.py"]
