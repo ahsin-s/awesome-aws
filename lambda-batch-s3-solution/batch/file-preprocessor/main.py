@@ -21,7 +21,7 @@ def determine_if_conversion_needed(filename):
 def extract_audio(video_path, audio_path, codec='mp3'):
     try:
         print("video path: ", video_path)
-        ffmpeg.input(video_path).output(audio_path, acodec=codec).run()
+        ffmpeg.input(video_path).output(audio_path, acodec=codec, vn=None, **{'b:a': '64k'}).run()
         print(f"Audio extracted and saved to {audio_path}")
     except ffmpeg.Error as e:
         print(f"An error occurred: {e.stderr.decode()}")
