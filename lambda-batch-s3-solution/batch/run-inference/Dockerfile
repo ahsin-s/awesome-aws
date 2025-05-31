@@ -1,7 +1,7 @@
 # --------------------
 # Stage 1: Build stage
 # --------------------
-FROM python:3.11-alpine AS builder
+FROM python:3.12-alpine AS builder
 
 # Set environment
 ENV VENV_PATH="/opt/venv"
@@ -27,7 +27,7 @@ RUN . $VENV_PATH/bin/activate && \
 # ----------------------
 # Stage 2: Runtime stage
 # ----------------------
-FROM python:3.11-alpine
+FROM python:3.12-alpine
 
 # Set environment
 ENV VENV_PATH="/opt/venv"

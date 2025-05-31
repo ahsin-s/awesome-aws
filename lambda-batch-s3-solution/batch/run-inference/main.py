@@ -3,50 +3,30 @@ import logging
 
 import whisper
 
-def download_s3(bucket: str, key: str) -> str:
-    logging.info(f"Downloading from {bucket} {key}")
-    temp_file_path = os.path.basename(key)
-    s3_client.download_file(bucket, key, temp_file_path)
-    logging.info(f"Successfully downloaded the object to {temp_file_path}")
-    return temp_file_path
-
-
-def upload_s3(file_name, bucket, object_name=None):
-    """Upload a file to an S3 bucket
-
-    :param file_name: File to upload
-    :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
-    :return: True if file was uploaded, else False
-    """
-
-    # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = os.path.basename(file_name)
-
-    try:
-        logging.info(f"Uploading file to {object_name}")
-        response = s3_client.upload_file(file_name, bucket, object_name)
-    except ClientError as e:
-        logging.error(e)
-        return False
-    logging.info("Object successfully uploaded")
-    return True
-
-
-def save_transcription_result(transcription_result: str):
-    raise NotImplementedError
+from shared_constructs.config import LambdaBatchS3SolutionConfig
+from shared_constructs.aws.s3 import download_s3, upload_s3
 
 
 def main():
     logging.info(f"Sys Args: {sys.argv}")
     bucket, key, job_id, user_id = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 
+    object_path = LambdaBatchS3SolutionConfig.get_preprocessed_path(user_id, job_id, key)
+    print(f"downloading from {object_path}")
+    local_object_path = download_s3(bucket, object_path)
 
-
+    print("loading model")
     model = whisper.load_model('whisper-small.pt')
     # Run transcription
-    result = model.transcribe("TestRecording.m4a")
+    print("running transcription")
+    result = model.transcribe(local_object_path)
+    text = result['text']
+    with open("inference.txt", "w") as f:
+        f.write(text)
+
+    print("Uploading transcribed text")
+    inference_upload_path = LambdaBatchS3SolutionConfig.get_inference_path(user_id, job_id, key)
+    upload_s3("inference.txt", bucket, inference_upload_path)
 
     return result
 
