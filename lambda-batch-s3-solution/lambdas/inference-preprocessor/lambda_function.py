@@ -5,6 +5,8 @@ of the inference step function pipeline.
 import json
 import boto3
 
+from shared_constructs.config import LambdaBatchS3SolutionConfig
+
 VALID_EXTENSIONS = [
     'mp3',
     'mp4',
@@ -39,7 +41,8 @@ def lambda_handler(event, context):
     if not bucket or not key:
         raise ValueError("bucket and key are required inputs to trigger this lambda")
 
-    if not check_object_exists(bucket, key):
+    object_path = LambdaBatchS3SolutionConfig.get_raw_file_upload_path(user_id, key)
+    if not check_object_exists(bucket, object_path):
         raise FileNotFoundError(f"object {key} not found")
 
     if not check_object_extension_is_valid(key):

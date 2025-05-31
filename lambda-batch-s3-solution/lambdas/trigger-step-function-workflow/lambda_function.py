@@ -7,6 +7,7 @@ import uuid
 import boto3
 
 from shared_constructs.aws.s3 import check_object_exists
+from shared_constructs.config import LambdaBatchS3SolutionConfig
 
 def put_job_metadata(execution_arn, user_id, object_key, bucket, job_id):
     dynamodb_client = boto3.resource("dynamodb")
@@ -30,7 +31,7 @@ def put_job_metadata(execution_arn, user_id, object_key, bucket, job_id):
 def lambda_handler(event, context):
     user_id = event.get('queryStringParameters', {}).get('user_id')
     object_name = event.get('queryStringParameters', {}).get('object_name')
-    object_key = f"uploads/{user_id}/{object_name}"
+    object_key = LambdaBatchS3SolutionConfig.get_raw_file_upload_path(user_id, object_name)
     bucket = os.environ.get("BUCKET_NAME")
     if not bucket:
         return {
@@ -50,7 +51,7 @@ def lambda_handler(event, context):
     job_id = str(uuid.uuid4())
     step_function_input = json.dumps({
         "bucket": bucket,
-        "key": object_key,
+        "key": object_name,
         "user_id": user_id,
         "job_id": job_id
     })
