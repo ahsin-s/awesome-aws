@@ -1,6 +1,7 @@
 import sys
 import logging
 
+import torch
 import whisper
 
 from shared_constructs.config import LambdaBatchS3SolutionConfig
@@ -16,7 +17,8 @@ def main():
     local_object_path = download_s3(bucket, object_path)
 
     print("loading model")
-    model = whisper.load_model('whisper-small.pt')
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model = whisper.load_model('whisper-small.pt', device=device)
     # Run transcription
     print("running transcription")
     result = model.transcribe(local_object_path)
