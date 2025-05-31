@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "shared-constructs"
-version = "1.0.4"
+version = "1.0.5"
 description = "AWS Solutions Architecture"
 packages = [
     {include = "shared_constructs", from="common_code/"}
@@ -27,4 +27,4 @@ pydantic = "^2.11.5"
 
 [tool.poetry.extras]
 deeplearning = ["torch", "openai-whisper"]
-videoprocessing = ["ffmpeg", "ffmpeg-python"]
+videoprocessing = ["ffmpeg-python"]
