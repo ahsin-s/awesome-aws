@@ -5,6 +5,7 @@ lambdas=(
   "pre-signed-url-generator"
   "trigger-step-function-workflow"
   "inference-preprocessor"
+  "get-job-status"
 )
 deploy_lambdas() {
   for lambda in "${lambdas[@]}"; do

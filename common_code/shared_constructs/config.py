@@ -9,6 +9,8 @@ class LambdaBatchS3SolutionConfig:
     PREPROCESSED_PREFIX = "preprocessed"
     INFERENCE_PREFIX = "inference"
 
+    JOB_METADATA_TABLE = 'batch-jobs-metadata'
+
 
     @classmethod
     def get_raw_file_upload_path(cls, user_id: str, object_name: str):

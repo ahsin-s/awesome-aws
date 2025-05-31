@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "shared-constructs"
-version = "1.0.5"
+version = "1.0.6"
 description = "AWS Solutions Architecture"
 packages = [
     {include = "shared_constructs", from="common_code/"}
