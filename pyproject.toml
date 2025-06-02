@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "shared-constructs"
-version = "1.0.6"
+version = "1.0.7"
 description = "AWS Solutions Architecture"
 packages = [
     {include = "shared_constructs", from="common_code/"}
@@ -16,7 +16,7 @@ repository = "https://github.com/ahsin-s/awesome-aws"
 classifiers = []
 
 [tool.poetry.dependencies]
-python = ">=3.12"
+python = ">=3.11"
 boto3 = ">=1.38.23"
 requests = ">=2.32.2"
 ffmpeg-python = {version = "~0.2.0", optional=true}
