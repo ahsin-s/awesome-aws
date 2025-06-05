@@ -1,6 +1,8 @@
 import sys
 import logging
+import datetime
 
+import boto3
 import torch
 import whisper
 
@@ -18,6 +20,25 @@ def get_converted_media(bucket: str, prefix: str) -> str:
     key = objs[0]
     downloaded_path = download_s3(bucket, key)
     return downloaded_path
+
+
+def update_transcribed_text_metadata_table(bucket, key, job_id, user_id):
+    dynamodb_client = boto3.resource("dynamodb")
+    table = dynamodb_client.Table('transcribed-text-metadata')
+    resp = table.put_item(
+        Item={
+            'user_id': user_id,
+            'job_id': job_id,
+            'object_key': key,
+            'bucket': bucket,
+            'trigger_datetime': datetime.datetime.now().isoformat()
+        }
+    )
+    if resp['ResponseMetadata']['HTTPStatusCode'] == 200:
+        print("Job metadata succesfully added")
+        return True
+    print("Job metadata not updated")
+    return False
 
 
 
@@ -42,8 +63,10 @@ def main():
 
     print("Uploading transcribed text")
     inference_upload_path = LambdaBatchS3SolutionConfig.get_inference_path(user_id, job_id, key)
-    upload_s3("inference.txt", bucket, inference_upload_path)
-
+    if upload_s3("inference.txt", bucket, inference_upload_path):
+        print("updating metadata")
+        update_transcribed_text_metadata_table(bucket, inference_upload_path, job_id, user_id)
+    print("Job Completed Successfully")
     return result
 
 
