@@ -11,6 +11,8 @@ class LambdaBatchS3SolutionConfig:
 
     JOB_METADATA_TABLE = 'batch-jobs-metadata'
 
+    AUDIO_PREFIXES = ["mp3", "wav", "m4a", "mpeg", "mov"]
+
 
     @classmethod
     def get_raw_file_upload_path(cls, user_id: str, object_name: str):

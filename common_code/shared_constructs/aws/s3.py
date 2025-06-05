@@ -55,3 +55,28 @@ def upload_s3(file_name, bucket, object_name=None):
         return False
     logging.info("Object successfully uploaded")
     return True
+
+def list_objects(bucket_name: str, prefix: str = '') -> list:
+    """
+    List all object keys in an S3 bucket under a specified prefix using pagination.
+
+    Args:
+        bucket_name (str): Name of the S3 bucket.
+        prefix (str): Prefix filter for the object keys.
+
+    Returns:
+        list: A list of object keys (prefixes) found under the given prefix.
+    """
+    s3_client = boto3.client('s3')
+    paginator = s3_client.get_paginator('list_objects_v2')
+
+    object_keys = []
+
+    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
+
+    for page in page_iterator:
+        contents = page.get('Contents', [])
+        for obj in contents:
+            object_keys.append(obj['Key'])
+
+    return object_keys
