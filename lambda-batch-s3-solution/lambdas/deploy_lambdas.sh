@@ -6,7 +6,6 @@ lambdas=(
   "trigger-step-function-workflow"
   "inference-preprocessor"
   "get-job-status"
-  "batch-job-parser"
 )
 deploy_lambdas() {
   for lambda in "${lambdas[@]}"; do
