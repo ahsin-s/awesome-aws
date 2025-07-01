@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>My Website Home Page</title>
+</head>
+<body>
+    <h1>Welcome to my website</h1>
+    <p>Now hosted on Amazon S3!</p>
+    <button type="submit" onClick="submitJob()">Send GET Request</button>
+<script>
+    async function submitJob() {
+        var url = "<api gateway endpoint here>"
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`Response status: ${response.status}`);
+            }
+
+            const json = await response.json();
+            console.log(json);
+          } catch (error) {
+            console.error(error.message);
+          }
+    }
+</script>
+</body>
+
+</html>
